@@ -25,7 +25,7 @@ public class GenAiChatController {
     public List<ChatOutput> chat(@RequestBody ChatInput chatInput) {
         chatHistory.addUserMessage(chatInput.input());
         List<ChatMessageContent<?>> results = chatCompletionService
-                .getChatMessageContentsAsync(chatHistory, null, null)
+                .getChatMessageContentsAsync(chatHistory, kernel, null)
                 .block();
         for(ChatMessageContent<?> message : results) {
             chatHistory.addMessage(message);
