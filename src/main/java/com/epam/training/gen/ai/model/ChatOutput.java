@@ -1,4 +1,6 @@
 package com.epam.training.gen.ai.model;
 
-public record ChatOutput(String role, String message) {
+import java.util.List;
+
+public record ChatOutput(List<ChatMessage> messages, Integer tokenUsage) {
 }

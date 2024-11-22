@@ -1,4 +1,10 @@
 package com.epam.training.gen.ai.model;
 
-public record ChatInput(String input) {
+import lombok.Data;
+
+@Data
+public class ChatInput {
+
+    private String input;
+    private String systemMessage;
 }
