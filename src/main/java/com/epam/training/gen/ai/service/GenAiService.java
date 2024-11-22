@@ -5,6 +5,8 @@ import com.epam.training.gen.ai.model.ChatInput;
 import com.epam.training.gen.ai.model.ChatMessage;
 import com.epam.training.gen.ai.model.ChatOutput;
 import com.microsoft.semantickernel.Kernel;
+import com.microsoft.semantickernel.orchestration.InvocationContext;
+import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import com.microsoft.semantickernel.services.chatcompletion.AuthorRole;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
@@ -22,11 +24,16 @@ public class GenAiService {
     private final ChatHistory chatHistory;
     private final Kernel kernel;
 
-    public ChatOutput chat(ChatInput chatInput) {
+    public ChatOutput chat(ChatInput chatInput, double temp) {
         addSystemMessageToHistory(chatInput);
         chatHistory.addUserMessage(chatInput.getInput());
+        InvocationContext invocationContext = InvocationContext.builder()
+                .withPromptExecutionSettings(PromptExecutionSettings.builder()
+                        .withTemperature(temp)
+                        .build())
+                .build();
         List<ChatMessageContent<?>> results = chatCompletionService
-                .getChatMessageContentsAsync(chatHistory, kernel, null)
+                .getChatMessageContentsAsync(chatHistory, kernel, invocationContext)
                 .block();
         addResultsToHistory(results);
         return createChatOutput();
