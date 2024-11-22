@@ -18,7 +18,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class GenAiService {
+public class GenAiChatService {
 
     private final ChatCompletionService chatCompletionService;
     private final ChatHistory chatHistory;
