@@ -7,6 +7,7 @@ import com.epam.training.gen.ai.model.ChatOutput;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.orchestration.InvocationContext;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
+import com.microsoft.semantickernel.services.ServiceNotFoundException;
 import com.microsoft.semantickernel.services.chatcompletion.AuthorRole;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
@@ -15,16 +16,16 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
 public class GenAiChatService {
 
-    private final ChatCompletionService chatCompletionService;
     private final ChatHistory chatHistory;
     private final Kernel kernel;
 
-    public ChatOutput chat(ChatInput chatInput, double temp) {
+    public ChatOutput chat(ChatInput chatInput, double temp) throws ServiceNotFoundException {
         addSystemMessageToHistory(chatInput);
         chatHistory.addUserMessage(chatInput.getInput());
         InvocationContext invocationContext = InvocationContext.builder()
@@ -32,6 +33,7 @@ public class GenAiChatService {
                         .withTemperature(temp)
                         .build())
                 .build();
+        ChatCompletionService chatCompletionService = kernel.getService(ChatCompletionService.class);
         List<ChatMessageContent<?>> results = chatCompletionService
                 .getChatMessageContentsAsync(chatHistory, kernel, invocationContext)
                 .block();
@@ -55,10 +57,8 @@ public class GenAiChatService {
     }
 
     private void addResultsToHistory(List<ChatMessageContent<?>> results) {
-        if(results != null) {
-            for (ChatMessageContent<?> message : results) {
-                chatHistory.addMessage(message);
-            }
+        if(Objects.nonNull(results)) {
+            results.forEach(chatHistory::addMessage);
         }
     }
 
