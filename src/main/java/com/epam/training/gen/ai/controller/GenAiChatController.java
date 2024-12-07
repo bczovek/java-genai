@@ -5,6 +5,8 @@ import com.epam.training.gen.ai.model.ChatOutput;
 import com.epam.training.gen.ai.service.GenAiChatService;
 import com.microsoft.semantickernel.services.ServiceNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,9 +19,19 @@ public class GenAiChatController {
 
     private final GenAiChatService genAiChatService;
 
-    @PostMapping("/chat")
-    public ChatOutput chat(@RequestBody ChatInput chatInput, @RequestParam(defaultValue = "0.5") double temp)
+    @PostMapping("/chat/{id}")
+    public ChatOutput chat(@RequestBody ChatInput chatInput, @PathVariable("id") String id, @RequestParam(defaultValue = "0.5") double temp)
             throws ServiceNotFoundException {
-        return genAiChatService.chat(chatInput, temp);
+        return genAiChatService.chat(chatInput, Long.parseLong(id), temp);
+    }
+
+    @GetMapping("openai/createChat")
+    public Long createOpenAiChat() {
+        return genAiChatService.createChat("OpenAI");
+    }
+
+    @GetMapping("mistral/createChat")
+    public Long createMistralChat() {
+        return genAiChatService.createChat("Mistral");
     }
 }

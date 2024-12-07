@@ -5,10 +5,12 @@ import static com.azure.ai.openai.OpenAIServiceVersion.V2024_02_01;
 import com.azure.ai.openai.OpenAIAsyncClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
 import com.azure.core.credential.AzureKeyCredential;
+import com.epam.training.gen.ai.completion.mistral.MistralDialChatCompletion;
+import com.epam.training.gen.ai.history.repository.ChatHistoryRepository;
+import com.epam.training.gen.ai.history.repository.impl.InMemoryChatHistoryRepository;
+import com.epam.training.gen.ai.selector.CustomAiServiceSelector;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
-import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
-import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,22 +29,29 @@ public class GenAiConfiguration {
     }
 
     @Bean
-    public ChatCompletionService chatCompletionService(OpenAIAsyncClient client, DialConnectionProperties connectionProperties) {
+    public OpenAIChatCompletion openAiCompletionService(OpenAIAsyncClient client, DialConnectionProperties connectionProperties) {
         return OpenAIChatCompletion.builder()
-                .withModelId(connectionProperties.deploymentName())
+                .withModelId(connectionProperties.deployments().openai())
                 .withOpenAIAsyncClient(client)
                 .build();
     }
 
     @Bean
-    public ChatHistory chatHistory() {
-        return new ChatHistory();
+    public MistralDialChatCompletion mistralCompletionService(OpenAIAsyncClient client, DialConnectionProperties connectionProperties) {
+        return new MistralDialChatCompletion(client, connectionProperties.deployments().mistral());
     }
 
     @Bean
-    public Kernel semanticKernel(ChatCompletionService chatCompletionService) {
+    public Kernel semanticKernel(OpenAIChatCompletion openAiCompletionService, MistralDialChatCompletion mistralCompletionService) {
         return Kernel.builder()
-                .withAIService(ChatCompletionService.class, chatCompletionService)
+                .withAIService(OpenAIChatCompletion.class, openAiCompletionService)
+                .withAIService(MistralDialChatCompletion.class, mistralCompletionService)
+                .withServiceSelector(CustomAiServiceSelector::new)
                 .build();
+    }
+
+    @Bean
+    public ChatHistoryRepository chatHistoryRepository() {
+        return new InMemoryChatHistoryRepository();
     }
 }
