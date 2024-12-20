@@ -8,16 +8,23 @@ import com.azure.core.credential.AzureKeyCredential;
 import com.epam.training.gen.ai.completion.mistral.MistralDialChatCompletion;
 import com.epam.training.gen.ai.history.repository.ChatHistoryRepository;
 import com.epam.training.gen.ai.history.repository.impl.InMemoryChatHistoryRepository;
+import com.epam.training.gen.ai.plugin.CurrencyConverterPlugin;
 import com.epam.training.gen.ai.selector.CustomAiServiceSelector;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
+import com.microsoft.semantickernel.plugin.KernelPluginFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableConfigurationProperties(DialConnectionProperties.class)
 public class GenAiConfiguration {
+
+    @Value("${plugin.exchange.api.url}")
+    private String exchangeRateApiUrl;
 
     @Bean
     public OpenAIAsyncClient openAIAsyncClient(DialConnectionProperties connectionProperties) {
@@ -42,8 +49,20 @@ public class GenAiConfiguration {
     }
 
     @Bean
-    public Kernel semanticKernel(OpenAIChatCompletion openAiCompletionService, MistralDialChatCompletion mistralCompletionService) {
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    public CurrencyConverterPlugin exchangeRatePlugin(RestTemplate restTemplate) {
+        return new CurrencyConverterPlugin(restTemplate, exchangeRateApiUrl);
+    }
+
+    @Bean
+    public Kernel semanticKernel(OpenAIChatCompletion openAiCompletionService, MistralDialChatCompletion mistralCompletionService,
+                                 CurrencyConverterPlugin currencyConverterPlugin) {
         return Kernel.builder()
+                .withPlugin(KernelPluginFactory.createFromObject(currencyConverterPlugin, "ExchangeRatePlugin"))
                 .withAIService(OpenAIChatCompletion.class, openAiCompletionService)
                 .withAIService(MistralDialChatCompletion.class, mistralCompletionService)
                 .withServiceSelector(CustomAiServiceSelector::new)

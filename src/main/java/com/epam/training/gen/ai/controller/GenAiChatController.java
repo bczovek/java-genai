@@ -29,9 +29,4 @@ public class GenAiChatController {
     public Long createOpenAiChat() {
         return genAiChatService.createChat("OpenAI");
     }
-
-    @GetMapping("mistral/createChat")
-    public Long createMistralChat() {
-        return genAiChatService.createChat("Mistral");
-    }
 }
