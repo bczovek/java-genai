@@ -1,6 +1,6 @@
-package com.epam.training.gen.ai.history.repository;
+package com.epam.training.gen.ai.agent.history.repository;
 
-import com.epam.training.gen.ai.history.ChatHistoryWrapper;
+import com.epam.training.gen.ai.agent.history.ChatHistoryWrapper;
 import java.util.Optional;
 
 public interface ChatHistoryRepository {

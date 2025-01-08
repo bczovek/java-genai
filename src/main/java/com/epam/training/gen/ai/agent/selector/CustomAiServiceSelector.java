@@ -1,6 +1,6 @@
-package com.epam.training.gen.ai.selector;
+package com.epam.training.gen.ai.agent.selector;
 
-import com.epam.training.gen.ai.completion.mistral.MistralDialChatCompletion;
+import com.epam.training.gen.ai.agent.completion.mistral.MistralDialChatCompletion;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import com.microsoft.semantickernel.semanticfunctions.KernelFunction;

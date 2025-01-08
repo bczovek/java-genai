@@ -1,4 +1,4 @@
-package com.epam.training.gen.ai.configuration;
+package com.epam.training.gen.ai.agent.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
