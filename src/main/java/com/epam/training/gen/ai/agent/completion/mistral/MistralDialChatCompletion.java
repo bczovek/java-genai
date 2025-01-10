@@ -1,4 +1,4 @@
-package com.epam.training.gen.ai.completion.mistral;
+package com.epam.training.gen.ai.agent.completion.mistral;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;

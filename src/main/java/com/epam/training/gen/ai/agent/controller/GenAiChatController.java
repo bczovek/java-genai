@@ -1,8 +1,8 @@
-package com.epam.training.gen.ai.controller;
+package com.epam.training.gen.ai.agent.controller;
 
-import com.epam.training.gen.ai.model.ChatInput;
-import com.epam.training.gen.ai.model.ChatOutput;
-import com.epam.training.gen.ai.service.GenAiChatService;
+import com.epam.training.gen.ai.agent.model.ChatInput;
+import com.epam.training.gen.ai.agent.model.ChatOutput;
+import com.epam.training.gen.ai.agent.service.GenAiChatService;
 import com.microsoft.semantickernel.services.ServiceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

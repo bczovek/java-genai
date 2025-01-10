@@ -1,4 +1,4 @@
-package com.epam.training.gen.ai.plugin;
+package com.epam.training.gen.ai.agent.plugin;
 
 import com.microsoft.semantickernel.semanticfunctions.annotations.DefineKernelFunction;
 import com.microsoft.semantickernel.semanticfunctions.annotations.KernelFunctionParameter;

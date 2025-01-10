@@ -1,7 +1,7 @@
-package com.epam.training.gen.ai.history.repository.impl;
+package com.epam.training.gen.ai.agent.history.repository.impl;
 
-import com.epam.training.gen.ai.history.ChatHistoryWrapper;
-import com.epam.training.gen.ai.history.repository.ChatHistoryRepository;
+import com.epam.training.gen.ai.agent.history.ChatHistoryWrapper;
+import com.epam.training.gen.ai.agent.history.repository.ChatHistoryRepository;
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

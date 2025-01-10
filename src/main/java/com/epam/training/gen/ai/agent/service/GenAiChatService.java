@@ -1,9 +1,9 @@
-package com.epam.training.gen.ai.service;
+package com.epam.training.gen.ai.agent.service;
 
-import com.epam.training.gen.ai.history.ChatHistoryWrapper;
-import com.epam.training.gen.ai.model.ChatInput;
-import com.epam.training.gen.ai.model.ChatOutput;
-import com.epam.training.gen.ai.history.repository.ChatHistoryRepository;
+import com.epam.training.gen.ai.agent.history.ChatHistoryWrapper;
+import com.epam.training.gen.ai.agent.model.ChatInput;
+import com.epam.training.gen.ai.agent.model.ChatOutput;
+import com.epam.training.gen.ai.agent.history.repository.ChatHistoryRepository;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
 import com.microsoft.semantickernel.orchestration.ToolCallBehavior;

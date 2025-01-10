@@ -1,4 +1,4 @@
-package com.epam.training.gen.ai.model;
+package com.epam.training.gen.ai.agent.model;
 
 import lombok.Data;
 
