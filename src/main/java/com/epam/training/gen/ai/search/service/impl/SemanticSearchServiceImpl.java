@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SemanticSearchServiceImpl implements SemanticSearchService {
 
     protected static final String ORIGIN_TEXT_PAYLOAD_KEY = "originText";
-    protected static final String VECTORS_COLLECTION_NAME = "vectors";
+    protected static final String VECTORS_COLLECTION_NAME = "embeddings";
     private final Kernel kernel;
     private final QdrantClient qdrantClient;
     private final AtomicLong id = new AtomicLong();
