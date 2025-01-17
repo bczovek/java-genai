@@ -32,9 +32,9 @@ public class GenAiChatController {
     }
 
     @PostMapping("/upload-knowledge")
-    public void uploadKnowledge(@RequestBody RAGInput ragKnowledge) throws ServiceNotFoundException, ExecutionException,
+    public void uploadKnowledge(@RequestBody RAGInput ragInput) throws ServiceNotFoundException, ExecutionException,
             InterruptedException {
-        genAiChatService.uploadKnowledge(ragKnowledge.input());
+        genAiChatService.uploadKnowledge(ragInput.input());
     }
 
     public record RAGInput(String input) {}
