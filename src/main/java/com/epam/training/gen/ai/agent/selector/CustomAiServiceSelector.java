@@ -11,6 +11,7 @@ import com.microsoft.semantickernel.services.AIServiceSelection;
 import com.microsoft.semantickernel.services.BaseAIServiceSelector;
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
 public class CustomAiServiceSelector extends BaseAIServiceSelector {
     public CustomAiServiceSelector(AIServiceCollection services) {
@@ -22,20 +23,24 @@ public class CustomAiServiceSelector extends BaseAIServiceSelector {
     protected <T extends AIService> AIServiceSelection<T> trySelectAIService(Class<T> aClass, @Nullable KernelFunction<?> kernelFunction,
                                                                              @Nullable KernelFunctionArguments kernelFunctionArguments,
                                                                              Map<Class<? extends AIService>, AIService> map) {
-        PromptExecutionSettings executionSettings = kernelFunction.getExecutionSettings()
-                .values().stream().findFirst().orElseThrow();
-        String model = kernelFunctionArguments.get("model").getValue(String.class);
-        T service;
-        switch (model) {
-            case "OpenAI" -> {
-                service = (T) services.get(OpenAIChatCompletion.class);
+        AIService service = null;
+        PromptExecutionSettings executionSettings = null;
+        if(Objects.nonNull(kernelFunction)) {
+             executionSettings = kernelFunction.getExecutionSettings()
+                    .values().stream().findFirst().orElse(null);
+            if (Objects.nonNull(kernelFunctionArguments)) {
+                String model = kernelFunctionArguments.get("model").getValue(String.class);
+                switch (model) {
+                    case "OpenAI" -> service = services.get(OpenAIChatCompletion.class);
+                    case "Mistral" -> service = services.get(MistralDialChatCompletion.class);
+                    default -> throw new IllegalStateException("Unexpected value: " + model);
+                }
             }
-            case "Mistral" -> {
-                service = (T) services.get(MistralDialChatCompletion.class);
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + model);
+        } else {
+            service = services.get(aClass);
         }
 
-        return new AIServiceSelection<>(service, executionSettings);
+
+        return new AIServiceSelection<>((T) service, executionSettings);
     }
 }
