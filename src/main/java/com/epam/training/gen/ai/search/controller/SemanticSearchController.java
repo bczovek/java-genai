@@ -32,7 +32,7 @@ public class SemanticSearchController {
     public SemanticSearchResult search(@RequestBody SemanticSearchInput semanticSearchInput)
             throws ServiceNotFoundException, ExecutionException, InterruptedException {
         List<Float> embedding = semanticSearchServiceImpl.embed(semanticSearchInput.text());
-        List<String> nearestFinds = semanticSearchServiceImpl.semanticSearch(semanticSearchInput.text(), embedding);
+        List<String> nearestFinds = semanticSearchServiceImpl.semanticSearch(embedding);
         return new SemanticSearchResult(nearestFinds);
     }
 

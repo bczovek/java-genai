@@ -10,25 +10,25 @@ import com.epam.training.gen.ai.agent.history.repository.ChatHistoryRepository;
 import com.epam.training.gen.ai.agent.history.repository.impl.InMemoryChatHistoryRepository;
 import com.epam.training.gen.ai.agent.plugin.CurrencyConverterPlugin;
 import com.epam.training.gen.ai.agent.selector.CustomAiServiceSelector;
+import com.epam.training.gen.ai.agent.plugin.KnowledgeSearchPlugin;
+import com.epam.training.gen.ai.vector.VectorStore;
+import com.epam.training.gen.ai.vector.impl.VectorStoreImpl;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
 import com.microsoft.semantickernel.aiservices.openai.textembedding.OpenAITextEmbeddingGenerationService;
 import com.microsoft.semantickernel.plugin.KernelPluginFactory;
 import io.qdrant.client.QdrantClient;
 import io.qdrant.client.QdrantGrpcClient;
-import io.qdrant.client.grpc.Collections;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import java.util.concurrent.ExecutionException;
 
 @Configuration
 @EnableConfigurationProperties(DialConnectionProperties.class)
 public class GenAiTrainingConfiguration {
 
-    protected static final String COLLECTION_NAME = "embeddings";
     @Value("${plugin.exchange.api.url}")
     private String exchangeRateApiUrl;
 
@@ -67,9 +67,10 @@ public class GenAiTrainingConfiguration {
     @Bean
     public Kernel semanticKernel(OpenAIChatCompletion openAiCompletionService, MistralDialChatCompletion mistralCompletionService,
                                  OpenAITextEmbeddingGenerationService textEmbeddingGenerationService,
-                                 CurrencyConverterPlugin currencyConverterPlugin) {
+                                 CurrencyConverterPlugin currencyConverterPlugin, KnowledgeSearchPlugin knowledgeSearchPlugin) {
         return Kernel.builder()
                 .withPlugin(KernelPluginFactory.createFromObject(currencyConverterPlugin, "ExchangeRatePlugin"))
+                .withPlugin(KernelPluginFactory.createFromObject(knowledgeSearchPlugin, "KnowledgeSearchPlugin"))
                 .withAIService(OpenAIChatCompletion.class, openAiCompletionService)
                 .withAIService(MistralDialChatCompletion.class, mistralCompletionService)
                 .withAIService(OpenAITextEmbeddingGenerationService.class, textEmbeddingGenerationService)
@@ -92,17 +93,24 @@ public class GenAiTrainingConfiguration {
     }
 
     @Bean
-    public QdrantClient qdrantClient() throws ExecutionException, InterruptedException {
-        QdrantClient qdrantClient = new QdrantClient(QdrantGrpcClient.newBuilder("localhost", 6334, false)
+    public KnowledgeSearchPlugin knowledgeSearchPlugin(OpenAITextEmbeddingGenerationService openAITextEmbeddingGenerationService,
+                                                       VectorStore ragVectorStore) {
+        return new KnowledgeSearchPlugin(openAITextEmbeddingGenerationService, ragVectorStore);
+    }
+
+    @Bean
+    public QdrantClient qdrantClient() {
+        return new QdrantClient(QdrantGrpcClient.newBuilder("localhost", 6334, false)
                 .build());
-        Boolean isCollectionExists = qdrantClient.collectionExistsAsync(COLLECTION_NAME).get();
-        if(!isCollectionExists) {
-            qdrantClient.createCollectionAsync(COLLECTION_NAME, Collections.VectorParams.newBuilder()
-                            .setDistance(Collections.Distance.Euclid)
-                            .setSize(1536)
-                            .build())
-                    .get();
-        }
-        return qdrantClient;
+    }
+
+    @Bean
+    public VectorStore embeddingsVectorStore(QdrantClient qdrantClient) {
+        return new VectorStoreImpl(qdrantClient, "embeddings");
+    }
+
+    @Bean
+    public VectorStore ragVectorStore(QdrantClient qdrantClient) {
+        return new VectorStoreImpl(qdrantClient, "rag");
     }
 }

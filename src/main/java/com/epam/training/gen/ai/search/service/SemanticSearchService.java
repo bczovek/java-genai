@@ -10,5 +10,5 @@ public interface SemanticSearchService {
 
     void storeEmbedding(String originText, List<Float> embedding) throws ExecutionException, InterruptedException;
 
-    List<String> semanticSearch(String text, List<Float> queryEmbedding) throws ExecutionException, InterruptedException;
+    List<String> semanticSearch(List<Float> queryEmbedding) throws ExecutionException, InterruptedException;
 }
