@@ -1,6 +1,5 @@
 package com.epam.training.gen.ai.agent.history;
 
-import com.azure.ai.openai.models.CompletionsUsage;
 import com.epam.training.gen.ai.agent.model.ChatMessage;
 import com.epam.training.gen.ai.agent.model.ChatOutput;
 import com.microsoft.semantickernel.services.chatcompletion.AuthorRole;
